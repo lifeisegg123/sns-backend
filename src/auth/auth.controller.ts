@@ -13,7 +13,7 @@ export class AuthController {
   }
 
   @Post('access-token')
-  async getAccessToken(@Body('refreshToken') refreshToken) {
+  async getAccessToken(@Body('refreshToken') refreshToken: string) {
     return this.authService.getAccessToken(refreshToken);
   }
 }

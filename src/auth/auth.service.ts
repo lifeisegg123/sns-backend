@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
 import { compare } from 'bcrypt';
 import { UsersService } from '../users/users.service';
 
@@ -22,7 +23,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: any) {
+  async login(user: User) {
     const payload = { email: user.email, sub: user.id };
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '1w' });
     await this.usersService.setRefreshToken(user.id, refreshToken);

@@ -10,21 +10,22 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  nickname  String?
-  password  String
-  Post      Post[]
-  Comment   Comment[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id           String    @id @default(uuid())
+  email        String    @unique
+  nickname     String
+  password     String
+  refreshToken String?   @db.VarChar(300)
+  Post         Post[]
+  Comment      Comment[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 model Post {
   id        String    @id @default(uuid())
-  desc      String
-  author    User?     @relation(fields: [authorId], references: [id])
-  authorId  String?
+  desc      String    @db.VarChar(500)
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  String
   Comment   Comment[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -32,11 +33,11 @@ model Post {
 
 model Comment {
   id        String   @id @default(uuid())
-  desc      String
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  String?
+  desc      String   @db.VarChar(200)
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Post      Post?    @relation(fields: [postId], references: [id])
-  postId    String?
+  Post      Post     @relation(fields: [postId], references: [id])
+  postId    String
 }

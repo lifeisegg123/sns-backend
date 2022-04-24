@@ -7,6 +7,7 @@ import {
   Param,
   UseGuards,
   Query,
+  Request,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -19,8 +20,14 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postsService.create(createPostDto);
+  create(
+    @Body() createPostDto: Omit<CreatePostDto, 'authorId'>,
+    @Request() req,
+  ) {
+    return this.postsService.create({
+      ...createPostDto,
+      authorId: req.user.userId,
+    });
   }
 
   @Get()
@@ -30,7 +37,11 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(id, updatePostDto);
+  update(
+    @Param('id') id: string,
+    @Body() updatePostDto: UpdatePostDto,
+    @Request() req,
+  ) {
+    return this.postsService.update(id, updatePostDto, req.user.userId);
   }
 }

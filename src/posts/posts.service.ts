@@ -8,19 +8,17 @@ export class PostsService {
   constructor(private prisma: PrismaService) {}
 
   create(createPostDto: CreatePostDto) {
-    return this.prisma.post.create({ data: createPostDto });
-  }
-
-  find(take: number, lastItemId?: string) {
-    return this.prisma.post.findMany({
-      orderBy: { createdAt: 'desc' },
-      cursor: lastItemId && { id: lastItemId },
-      take,
-      skip: lastItemId ? 1 : 0,
-      include: {
+    return this.prisma.post.create({
+      data: createPostDto,
+      select: {
+        id: true,
+        desc: true,
+        authorId: true,
         comments: {
-          include: {
-            author: {
+          select: {
+            id: true,
+            desc: true,
+            commenter: {
               select: {
                 id: true,
                 nickname: true,
@@ -37,7 +35,41 @@ export class PostsService {
     });
   }
 
-  async update(id: string, updatePostDto: UpdatePostDto) {
-    return this.prisma.post.update({ data: updatePostDto, where: { id } });
+  find(take: number, lastItemId?: string) {
+    return this.prisma.post.findMany({
+      orderBy: { createdAt: 'desc' },
+      cursor: lastItemId && { id: lastItemId },
+      take,
+      skip: lastItemId ? 1 : 0,
+      select: {
+        id: true,
+        desc: true,
+        authorId: true,
+        comments: {
+          select: {
+            id: true,
+            desc: true,
+            commenter: {
+              select: {
+                id: true,
+                nickname: true,
+              },
+            },
+          },
+        },
+        author: {
+          select: {
+            nickname: true,
+          },
+        },
+      },
+    });
+  }
+
+  async update(id: string, updatePostDto: UpdatePostDto, userId: string) {
+    return this.prisma.post.updateMany({
+      data: updatePostDto,
+      where: { id, authorId: userId },
+    });
   }
 }

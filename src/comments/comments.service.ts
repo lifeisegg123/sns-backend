@@ -6,7 +6,9 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 export class CommentsService {
   constructor(private prisma: PrismaService) {}
 
-  create(createCommentDto: CreateCommentDto) {
-    return this.prisma.comment.create({ data: createCommentDto });
+  create(createCommentDto: CreateCommentDto, commenterId: string) {
+    return this.prisma.comment.create({
+      data: { ...createCommentDto, commenterId },
+    });
   }
 }

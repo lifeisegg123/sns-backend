@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { compare } from 'bcrypt';
@@ -15,12 +15,14 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findByEmail(email);
+    if (!user)
+      throw new BadRequestException('이메일 정보가 올바르지 않습니다.');
     const result = await compare(password, user.password);
     if (result) {
       user.password = undefined;
       return user;
     }
-    return null;
+    throw new BadRequestException('비밀번호가 올바르지 않습니다.');
   }
 
   async login(user: User) {

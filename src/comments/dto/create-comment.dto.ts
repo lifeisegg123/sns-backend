@@ -5,8 +5,5 @@ export class CreateCommentDto {
   desc: string;
 
   @IsUUID()
-  authorId: string;
-
-  @IsUUID()
   postId: string;
 }

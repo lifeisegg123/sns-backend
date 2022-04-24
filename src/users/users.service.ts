@@ -10,12 +10,19 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     const password = hashSync(createUserDto.password, 12);
-    const user = await this.prisma.user.create({
-      data: { ...createUserDto, password },
-    });
+    try {
+      const user = await this.prisma.user.create({
+        data: { ...createUserDto, password },
+      });
+      user.refreshToken = undefined;
+      user.password = undefined;
+      return user;
+    } catch (error) {
+      if (error.code === 'P2002')
+        throw new BadRequestException('동일한 정보의 유저가 있습니다.');
 
-    user.password = undefined;
-    return user;
+      throw new Error(error);
+    }
   }
 
   async findOne(id: string) {

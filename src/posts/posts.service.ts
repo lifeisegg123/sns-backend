@@ -17,6 +17,23 @@ export class PostsService {
       cursor: lastItemId && { id: lastItemId },
       take,
       skip: lastItemId ? 1 : 0,
+      include: {
+        comments: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                nickname: true,
+              },
+            },
+          },
+        },
+        author: {
+          select: {
+            nickname: true,
+          },
+        },
+      },
     });
   }
 

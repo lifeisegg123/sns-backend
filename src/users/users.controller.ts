@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -26,8 +27,8 @@ export class UsersController {
   }
 
   @Get('email')
-  async findEmail(@Param('email') email: string) {
-    const user = await this.usersService.findByEmail(email);
+  async findEmail(@Query('email') email: string) {
+    const [user] = await this.usersService.validateEmail(email);
     if (user) return { message: 'email이 사용중입니다.', usable: false };
     return { message: '사용가능 한 email입니다.', usable: true };
   }

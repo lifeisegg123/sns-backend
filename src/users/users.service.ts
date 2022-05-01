@@ -39,6 +39,10 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
+  validateEmail(email: string) {
+    return this.prisma.user.findMany({ where: { email } });
+  }
+
   async findAll() {
     const user = await this.prisma.user.findMany();
     if (!user) {

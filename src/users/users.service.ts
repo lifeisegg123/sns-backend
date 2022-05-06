@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { hashSync } from 'bcrypt';
 
 import { PrismaService } from 'src/prisma.service';
+import { getUserWithoutAuthInfo } from 'src/utils/getUserWithoutAuthInfo';
 import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
@@ -14,9 +15,7 @@ export class UsersService {
       const user = await this.prisma.user.create({
         data: { ...createUserDto, password },
       });
-      user.refreshToken = undefined;
-      user.password = undefined;
-      return user;
+      return getUserWithoutAuthInfo(user);
     } catch (error) {
       if (error.code === 'P2002')
         throw new BadRequestException('동일한 정보의 유저가 있습니다.');
@@ -30,17 +29,17 @@ export class UsersService {
     if (!user) {
       throw new BadRequestException('해당하는 유저를 찾을 수 없습니다.');
     }
-    user.password = undefined;
-    user.refreshToken = undefined;
-    return user;
+    return getUserWithoutAuthInfo(user);
   }
 
   findByEmail(email: string) {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  validateEmail(email: string) {
-    return this.prisma.user.findMany({ where: { email } });
+  async validateEmail(email: string) {
+    const [user] = await this.prisma.user.findMany({ where: { email } });
+    if (user) return { message: 'email이 사용중입니다.', usable: false };
+    return { message: '사용가능 한 email입니다.', usable: true };
   }
 
   async findAll() {
@@ -52,8 +51,8 @@ export class UsersService {
   }
 
   async delete(id: string) {
-    const user = await this.prisma.user.delete({ where: { id } });
-    return user;
+    await this.prisma.user.delete({ where: { id } });
+    return true;
   }
 
   async setRefreshToken(id: string, refreshToken: string) {

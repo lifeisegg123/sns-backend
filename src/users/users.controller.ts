@@ -27,10 +27,8 @@ export class UsersController {
   }
 
   @Get('email')
-  async findEmail(@Query('email') email: string) {
-    const [user] = await this.usersService.validateEmail(email);
-    if (user) return { message: 'email이 사용중입니다.', usable: false };
-    return { message: '사용가능 한 email입니다.', usable: true };
+  findEmail(@Query('email') email: string) {
+    return this.usersService.validateEmail(email);
   }
 
   @UseGuards(JwtAuthGuard)

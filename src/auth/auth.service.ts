@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { compare } from 'bcrypt';
+import { getUserWithoutAuthInfo } from 'src/utils/getUserWithoutAuthInfo';
 import { UsersService } from '../users/users.service';
 
 const DAY_IN_SEC = 86400;
@@ -58,6 +59,7 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
+      user: getUserWithoutAuthInfo(user),
     };
   }
 }

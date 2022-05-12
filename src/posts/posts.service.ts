@@ -47,6 +47,7 @@ export class PostsService {
       skip: lastItemId ? 1 : 0,
       select: {
         id: true,
+        title: true,
         desc: true,
         authorId: true,
         comments: {

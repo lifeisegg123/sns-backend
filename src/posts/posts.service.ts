@@ -36,7 +36,10 @@ export class PostsService {
   }
 
   async find(take: number, lastItemId?: string) {
-    const total = await this.prisma.post.count();
+    const { id: lastId } = await this.prisma.post.findFirst({
+      orderBy: { createdAt: 'asc' },
+      select: { id: true },
+    });
     const posts = await this.prisma.post.findMany({
       orderBy: { createdAt: 'desc' },
       cursor: lastItemId && { id: lastItemId },
@@ -66,7 +69,7 @@ export class PostsService {
       },
     });
     return {
-      total,
+      lastId,
       posts,
     };
   }

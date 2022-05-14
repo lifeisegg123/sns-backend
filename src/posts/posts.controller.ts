@@ -36,6 +36,16 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('my')
+  findMyPosts(
+    @Query('take') take: string,
+    @Request() req,
+    @Query('lastItemId') lastItemId?: string,
+  ) {
+    return this.postsService.findMy(+take, req.user.userId, lastItemId);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(
     @Param('id') id: string,

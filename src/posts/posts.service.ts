@@ -12,6 +12,7 @@ export class PostsService {
       data: createPostDto,
       select: {
         id: true,
+        title: true,
         desc: true,
         authorId: true,
         comments: {
@@ -43,6 +44,52 @@ export class PostsService {
     const posts = await this.prisma.post.findMany({
       orderBy: { createdAt: 'desc' },
       cursor: lastItemId && { id: lastItemId },
+      take,
+      skip: lastItemId ? 1 : 0,
+      select: {
+        id: true,
+        title: true,
+        desc: true,
+        authorId: true,
+        comments: {
+          select: {
+            id: true,
+            desc: true,
+            commenter: {
+              select: {
+                id: true,
+                nickname: true,
+              },
+            },
+          },
+        },
+        author: {
+          select: {
+            nickname: true,
+          },
+        },
+      },
+    });
+    return {
+      lastId,
+      posts,
+    };
+  }
+
+  async findMy(take: number, authorId: string, lastItemId?: string) {
+    const { id: lastId } = await this.prisma.post.findFirst({
+      orderBy: { createdAt: 'asc' },
+      where: {
+        authorId,
+      },
+      select: { id: true },
+    });
+    const posts = await this.prisma.post.findMany({
+      orderBy: { createdAt: 'desc' },
+      cursor: lastItemId && { id: lastItemId },
+      where: {
+        authorId,
+      },
       take,
       skip: lastItemId ? 1 : 0,
       select: {

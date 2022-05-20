@@ -52,6 +52,7 @@ export class PostsService {
         desc: true,
         authorId: true,
         comments: {
+          orderBy: { createdAt: 'asc' },
           select: {
             id: true,
             desc: true,
@@ -98,6 +99,7 @@ export class PostsService {
         desc: true,
         authorId: true,
         comments: {
+          orderBy: { createdAt: 'asc' },
           select: {
             id: true,
             desc: true,

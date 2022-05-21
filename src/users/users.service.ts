@@ -60,14 +60,19 @@ export class UsersService {
     await this.prisma.user.update({ where: { id }, data: { refreshToken } });
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    return this.prisma.user.update({
-      data: updateUserDto,
-      where: { id },
-      select: {
-        email: true,
-        nickname: true,
-      },
-    });
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    try {
+      return await this.prisma.user.update({
+        data: updateUserDto,
+        where: { id },
+        select: {
+          email: true,
+          nickname: true,
+        },
+      });
+    } catch (error) {
+      if (error.code === 'P2002')
+        throw new BadRequestException('동일한 정보의 유저가 있습니다.');
+    }
   }
 }

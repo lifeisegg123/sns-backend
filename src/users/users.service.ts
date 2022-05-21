@@ -4,6 +4,7 @@ import { hashSync } from 'bcrypt';
 import { PrismaService } from 'src/prisma.service';
 import { getUserWithoutAuthInfo } from 'src/utils/getUserWithoutAuthInfo';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -57,5 +58,16 @@ export class UsersService {
 
   async setRefreshToken(id: string, refreshToken: string) {
     await this.prisma.user.update({ where: { id }, data: { refreshToken } });
+  }
+
+  update(id: string, updateUserDto: UpdateUserDto) {
+    return this.prisma.user.update({
+      data: updateUserDto,
+      where: { id },
+      select: {
+        email: true,
+        nickname: true,
+      },
+    });
   }
 }

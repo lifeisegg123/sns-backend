@@ -33,6 +33,10 @@ export class UsersService {
     return getUserWithoutAuthInfo(user);
   }
 
+  findOneForToken(id: string) {
+    return this.prisma.user.findUnique({ where: { id } });
+  }
+
   findByEmail(email: string) {
     return this.prisma.user.findUnique({ where: { email } });
   }

@@ -27,7 +27,7 @@ export class AuthService {
   }
 
   async login(user: User) {
-    const payload = { email: user.email, sub: user.id };
+    const payload = { sub: user.id };
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '1w' });
     await this.usersService.setRefreshToken(user.id, refreshToken);
     user.refreshToken = undefined;
@@ -41,14 +41,14 @@ export class AuthService {
   async getAccessToken(refreshToken: string) {
     const token = this.jwtService.verify(refreshToken, { clockTimestamp: 1 });
 
-    const user = await this.usersService.findByEmail(token.email);
+    const user = await this.usersService.findOneForToken(token.sub);
 
     if (user.refreshToken !== refreshToken) {
       throw new Error('Refresh token is invalid');
     }
 
     const now = new Date().getTime() / 1000;
-    const payload = { email: user.email, sub: user.id };
+    const payload = { sub: user.id };
     if (token.exp - now < DAY_IN_SEC) {
       refreshToken = this.jwtService.sign(payload, { expiresIn: '1w' });
       await this.usersService.setRefreshToken(user.id, refreshToken);

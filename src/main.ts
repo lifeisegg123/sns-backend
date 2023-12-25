@@ -9,7 +9,10 @@ async function bootstrap() {
 
   app.enableCors();
 
-  const config = new DocumentBuilder().setTitle('Sns API').build();
+  const config = new DocumentBuilder()
+    .setTitle('Sns API')
+    .addBearerAuth()
+    .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
